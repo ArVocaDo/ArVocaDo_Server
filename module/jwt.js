@@ -1,6 +1,6 @@
 var randtoken = require('rand-token');
 const jwt = require('jsonwebtoken');
-const secretOrPrivateKey = "DearMyHealthKey";
+const secretOrPrivateKey = "ARVocadoKey";
 const options = {
     algorithm: "HS256",
     expiresIn: "14d",
@@ -16,8 +16,8 @@ const refreshOptions = {
 module.exports = {
     sign: (user) => {
         const payload = {
-            userIdx: user.userIdx,
-            email: user.email,
+            userIdx: user.u_idx,
+            id: user.id,
             nickname: user.nickname,
         };
 
@@ -50,8 +50,8 @@ module.exports = {
     },
     refresh: (user) => {
         const payload = {
-            userIdx: user.userIdx,
-            email: user.email,
+            userIdx: user.u_idx,
+            id: user.id,
             nickname: user.nickname,
         };
 
