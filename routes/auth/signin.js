@@ -33,6 +33,7 @@ router.post('/', async (req, res) => {
         if (selectUserResult[0].password == hashedEnterPw.toString('base64')) {
             const tokens = jwtUtils.sign(selectUserResult[0]);
             const refreshToken = tokens.refreshToken;
+            
             const refreshTokenUpdateQuery = "UPDATE user SET refresh_token = ? WHERE id= ?";
             const refreshTokenUpdateResult = await db.queryParam_Parse(refreshTokenUpdateQuery, [refreshToken, req.body.id]);
             if (!refreshTokenUpdateResult) {
