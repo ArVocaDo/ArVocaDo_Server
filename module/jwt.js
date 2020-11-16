@@ -18,7 +18,7 @@ module.exports = {
         const payload = {
 
             u_idx: user.u_idx,
-            id: user.id,
+            email: user.email,
             nickname: user.nickname,
         };
 
@@ -53,10 +53,10 @@ module.exports = {
         const payload = {
 
             u_idx: user.u_idx,
-            id: user.id,
+            email: user.email,
             nickname: user.nickname,
         };
 
-        return jwt.sign(payload, secretOrPrivateKey, refreshOptions);
+        return jwt.sign(payload, secretOrPrivateKey, options);
     }
 };

@@ -17,41 +17,14 @@ BODY         : category = 카테고리명
                w_eng = 단어 영어명
                w_kor =  단어 한글명
                AR_obj = AR obj 파일
-               AR_mtl = AR mtl 파일
+               AR_mtl = AR mtl 파일a
                audio_eng = 영어 오디오 파일
                audio_kor = 한글 오디오 파일
 */
 
-// router.post('/single', upload.single('img'), (req, res) => {
-//     /*
-//         파일이 하나만 전송할 때 single 메소드 쓰임
-//         file.location으로 전송된 파일 경로 접근
-//     */
-//     const img = req.file.location;
-//     console.log(img);
-// });
-
-// router.post('/multi', upload.array('imgs'), (req, res) => {
-//     /*
-//         파일을 여러개 전송할 때 array 메소드 쓰임
-//         req.files에 전송된 파일들에 대한 정보가 들어있음
-//         files[i].location으로 전송된 파일 경로 접근
-//     */
-//     const imgs = req.files;
-//     for (let i = 0; i < imgs.length; i++) {
-//         console.log(imgs[i].location)
-//     }
-// });
-
 
 router.post('/', upload.fields([{ name: 'AR_obj' }, { name: 'AR_mtl' }, { name: 'audio_eng' }, { name: 'audio_kor'}]), async (req, res) => {
-
-    
-    /*
-        파일을 여러개 전송할 때 fields 메소드 쓰임
-        req.files에 전송된 키 값 이름으로 사진에 대한 정보 배열이 들어가있음
-        files.키값[i].location으로 전송된 파일 경로 접근
-    */
+    console.log("word등록");
     const selectCategoryIndexQuery = 'SELECT c_idx FROM category WHERE c_name = ?';
     const selectCategoryIndexResult = await db.queryParam_Parse(selectCategoryIndexQuery, [req.body.category]);
 
@@ -61,9 +34,35 @@ router.post('/', upload.fields([{ name: 'AR_obj' }, { name: 'AR_mtl' }, { name: 
         const insertWordResult = await db.queryParam_Arr(insertWordQuery, [selectCategoryIndexResult[0].c_idx, req.body.w_eng, req.body.w_kor, 
             req.files.AR_obj[0].location, req.files.AR_mtl[0].location, req.files.audio_eng[0].location, req.files.audio_kor[0].location]);
         
-        res.status(200).send(defaultRes.successTrue(statusCode.OK, "s3성공"));
+        if(!insertWordResult) {
+            res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.FAIL_REGISTER_WORD));
+        } else {
+            res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.SUCCESS_REGISTER_WORD));
+        }
     } else { // 기존에 등록된 카테고리가 아닌 새로운 카테고리의 단어 등록을 하는 경우 => 어떻게할건지 카테고리를 계속 추가해나갈건지? (처리안해도될듯)
 
+    }
+});
+
+/*
+카테고리별 단어 조회
+METHOD       : POST
+URL          : /word?category={categoryIdx}
+PARAMETER    : categoryIdx = 카테고리인덱스
+*/
+
+router.get('/', async (req, res) => {
+    const selectWordInCategoryQuery = 'SELECT * FROM word where c_idx = ?';
+    const selectWordInCategoryResult = await db.queryParam_Parse(selectWordInCategoryQuery, req.query.category);
+
+    if(!selectWordInCategoryResult) {
+        res.status(200).send(defaultRes.successFalse(statusCode.OK, resMessage.FAIL_SELECT_WORD_IN_CATEGORY));
+    } else {
+        if(selectWordInCategoryResult[0] != null) {
+            res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.SUCCESS_SELECT_WORD_IN_CATEGORY, selectWordInCategoryResult));
+        } else {
+            res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.NOT_EXIST_WORD_IN_CATEGORY))
+        }
     }
 });
 
