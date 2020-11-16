@@ -14,18 +14,18 @@ const jwtUtils = require('../../module/jwt');
 로그인
 METHOD       : POST
 URL          : /auth/signin
-BODY         : id = 사용자 아이디
+BODY         : email = 사용자 아이디
                password = 사용자 패스워드
 */
 
 router.post('/', async (req, res) => {
-    const selectUserQuery = 'SELECT * FROM user WHERE id = ?'
-    const selectUserResult = await db.queryParam_Parse(selectUserQuery, [req.body.id]);
+    const selectUserQuery = 'SELECT * FROM user WHERE email = ?'
+    const selectUserResult = await db.queryParam_Parse(selectUserQuery, [req.body.email]);
     console.log(selectUserResult[0])//유저 정보
 
     if (selectUserResult[0] == null) {//id가 존재하지 않으면
-        console.log("id가 존재하지 않음");
-        res.status(200).send(defaultRes.successFalse(statusCode.OK, resMessage.NOT_EXIST_ID));
+        console.log("email이 존재하지 않음");
+        res.status(200).send(defaultRes.successFalse(statusCode.OK, resMessage.NOT_EXIST_EMAIL));
     } else {
         const salt = selectUserResult[0].salt;
         const hashedEnterPw = await crypto.pbkdf2(req.body.password.toString(), salt, 1000, 32, 'SHA512');
@@ -33,9 +33,9 @@ router.post('/', async (req, res) => {
         if (selectUserResult[0].password == hashedEnterPw.toString('base64')) {
             const tokens = jwtUtils.sign(selectUserResult[0]);
             const refreshToken = tokens.refreshToken;
-            
-            const refreshTokenUpdateQuery = "UPDATE user SET refresh_token = ? WHERE id= ?";
-            const refreshTokenUpdateResult = await db.queryParam_Parse(refreshTokenUpdateQuery, [refreshToken, req.body.id]);
+
+            const refreshTokenUpdateQuery = "UPDATE user SET refresh_token = ? WHERE email= ?";
+            const refreshTokenUpdateResult = await db.queryParam_Parse(refreshTokenUpdateQuery, [refreshToken, req.body.email]);
             if (!refreshTokenUpdateResult) {
                 res.status(200).send(defaultRes.successFalse(statusCode.OK, resMessage.FAIL_SAVE_REFRESHTOKEN));
             } else {
