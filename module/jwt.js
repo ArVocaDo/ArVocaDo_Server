@@ -1,6 +1,6 @@
 var randtoken = require('rand-token');
 const jwt = require('jsonwebtoken');
-const secretOrPrivateKey = "DearMyHealthKey";
+const secretOrPrivateKey = "ARVocadoKey";
 const options = {
     algorithm: "HS256",
     expiresIn: "14d",
@@ -16,14 +16,13 @@ const refreshOptions = {
 module.exports = {
     sign: (user) => {
         const payload = {
-            userIdx: user.userIdx,
+            u_idx: user.u_idx,
             email: user.email,
             nickname: user.nickname,
         };
 
         const result = {
             token: jwt.sign(payload, secretOrPrivateKey, options),
-            refreshToken: randtoken.uid(256)
         };
         //refreshToken을 만들 때에도 다른 키를 쓰는게 좋다.
 
@@ -50,7 +49,8 @@ module.exports = {
     },
     refresh: (user) => {
         const payload = {
-            userIdx: user.userIdx,
+
+            u_idx: user.u_idx,
             email: user.email,
             nickname: user.nickname,
         };
