@@ -5,5 +5,7 @@ var router = express.Router();
 router.use("/signup", require("./signup"));
 //로그인
 router.use("/signin", require("./signin"));
+//토큰 확인
+router.use("/token", require("./token"));
 
 module.exports = router;

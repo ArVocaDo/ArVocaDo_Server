@@ -32,16 +32,7 @@ router.post('/', async (req, res) => {
 
         if (selectUserResult[0].password == hashedEnterPw.toString('base64')) {
             const tokens = jwtUtils.sign(selectUserResult[0]);
-            const refreshToken = tokens.refreshToken;
-
-            const refreshTokenUpdateQuery = "UPDATE user SET refresh_token = ? WHERE email= ?";
-            const refreshTokenUpdateResult = await db.queryParam_Parse(refreshTokenUpdateQuery, [refreshToken, req.body.email]);
-            if (!refreshTokenUpdateResult) {
-                res.status(200).send(defaultRes.successFalse(statusCode.OK, resMessage.FAIL_SAVE_REFRESHTOKEN));
-            } else {
-                res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.SUCCESS_SIGNIN, tokens));
-            }
-
+            res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.SUCCESS_SIGNIN, tokens));
         } else {
             console.log("비밀번호가 일치하지 않음");
             res.status(200).send(defaultRes.successFalse(statusCode.OK, resMessage.NOT_CORRECT_PASSWORD));

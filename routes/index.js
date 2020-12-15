@@ -6,5 +6,6 @@ var router = express.Router();
 router.use("/auth", require("./auth/index"));
 router.use("/word", require("./word/index"));
 router.use("/category", require("./category/index"));
+router.use("/scrap", require("./scrap/index"));
 
 module.exports = router;

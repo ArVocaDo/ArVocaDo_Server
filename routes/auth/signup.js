@@ -8,6 +8,9 @@ const statusCode = require('../../module/utils/statusCode');
 const resMessage = require('../../module/utils/responseMessage')
 const db = require('../../module/pool');
 
+const jwtUtils = require('../../module/jwt');
+
+
 /*
 회원가입
 METHOD       : POST
@@ -30,7 +33,14 @@ router.post('/', async (req, res) => {
     if (!signupResult) {
         res.status(200).send(defaultRes.successFalse(statusCode.OK, resMessage.FAIL_SIGNUP));
     } else { //쿼리문이 성공했을 때
-        res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.SUCCESS_SIGNUP));
+        const userInfo = {
+            u_idx: signupResult.insertId,
+            email: req.body.email,
+            nickname: req.body.nickname,
+        }
+    
+        const tokens = jwtUtils.sign(userInfo);
+        res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.SUCCESS_SIGNUP, tokens));
     }
 });
 
